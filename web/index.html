@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kalimantan FireWatch</title>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <link rel="stylesheet"
+          href="style.css">
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🔥
+            </div>
+
+            <div>
+                <h1>Kalimantan FireWatch</h1>
+
+                <p>
+                    Real-Time Satellite Fire Monitoring
+                </p>
+            </div>
+
+        </div>
+
+        <div class="header-right">
+
+            <div class="live-status">
+                <span class="live-dot"></span>
+                LIVE
+            </div>
+
+            <button
+                id="theme-toggle"
+                class="theme-button">
+                ☀ Light
+            </button>
+
+            <button
+                id="refresh-button"
+                class="header-button">
+                ↻ Refresh
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN DASHBOARD
+    ====================================================== -->
+
+    <main class="dashboard">
+
+        <!-- =================================================
+             LEFT SIDEBAR
+        ================================================== -->
+
+        <aside class="sidebar">
+
+            <!-- OVERVIEW -->
+
+            <section class="section-block">
+
+                <div class="section-title">
+                    <span>Current Situation</span>
+                    <small>ACTIVE FILTERS</small>
+                </div>
+
+                <div class="stat-grid">
+
+                    <div class="stat-card red">
+
+                        <span class="stat-label">
+                            Fire Events
+                        </span>
+
+                        <strong id="total-events">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="stat-card orange">
+
+                        <span class="stat-label">
+                            Detections
+                        </span>
+
+                        <strong id="total-detections">
+                            —
+                        </strong>
+
+                    </div>
+
+                    <div class="stat-card dark-red">
+
+                        <span class="stat-label">
+                            Total FRP
+                        </span>
+
+                        <strong id="total-frp">
+                            —
+                        </strong>
+
+                        <small>
+                            MW
+                        </small>
+
+                    </div>
+
+                    <div class="stat-card neutral">
+
+                        <span class="stat-label">
+                            Provinces
+                        </span>
+
+                        <strong id="total-provinces">
+                            4
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- FILTER -->
+
+            <section class="filter-panel">
+
+                <div class="section-title">
+
+                    <span>Fire Filters</span>
+
+                    <small>SPATIAL</small>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="filter-group">
+
+                    <label for="fire-date">
+                        Acquisition Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fire-date">
+
+                </div>
+
+
+                <!-- PROVINCE -->
+
+                <div class="filter-group">
+
+                    <label for="province-filter">
+                        Province
+                    </label>
+
+                    <select id="province-filter">
+
+                        <option value="all">
+                            All Provinces
+                        </option>
+
+                        <option value="Kalimantan Barat">
+                            Kalimantan Barat
+                        </option>
+
+                        <option value="Kalimantan Tengah">
+                            Kalimantan Tengah
+                        </option>
+
+                        <option value="Kalimantan Timur">
+                            Kalimantan Timur
+                        </option>
+
+                        <option value="Kalimantan Selatan">
+                            Kalimantan Selatan
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- SATELLITE -->
+
+                <div class="filter-group">
+
+                    <label for="satellite-filter">
+                        Satellite
+                    </label>
+
+                    <select id="satellite-filter">
+
+                        <option value="all">
+                            All Satellites
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- CONFIDENCE -->
+
+                <div class="filter-group">
+
+                    <label for="confidence-filter">
+                        Confidence
+                    </label>
+
+                    <select id="confidence-filter">
+
+                        <option value="all">
+                            All Confidence
+                        </option>
+
+                        <option value="n">
+                            Nominal
+                        </option>
+
+                        <option value="l">
+                            Low
+                        </option>
+
+                        <option value="h">
+                            High
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- FRP -->
+
+                <div class="filter-group">
+
+                    <label for="frp-filter">
+                        Minimum FRP
+                    </label>
+
+                    <div class="frp-input">
+
+                        <input
+                            type="number"
+                            id="frp-filter"
+                            value="0"
+                            min="0"
+                            step="0.1">
+
+                        <span>
+                            MW
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="filter-buttons">
+
+                    <button
+                        id="apply-filter"
+                        class="primary-button">
+                        Apply Filters
+                    </button>
+
+                    <button
+                        id="reset-filter"
+                        class="secondary-button">
+                        Reset
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- LEGEND -->
+
+            <section class="legend-panel">
+
+                <div class="section-title">
+
+                    <span>Fire Intensity</span>
+
+                    <small>FRP</small>
+
+                </div>
+
+                <div class="legend-grid">
+
+                    <div class="legend-item">
+                        <span class="legend-dot low"></span>
+                        <span>Low</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot medium"></span>
+                        <span>Medium</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot high"></span>
+                        <span>High</span>
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot extreme"></span>
+                        <span>Extreme</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- TREND -->
+
+            <section class="trend-panel">
+
+                <div class="section-title">
+
+                    <span>Fire Activity</span>
+
+                    <small>TIME SERIES</small>
+
+                </div>
+
+                <div class="trend-chart-wrapper">
+
+                    <canvas id="fireTrendChart"></canvas>
+
+                </div>
+
+            </section>
+
+        </aside>
+
+
+        <!-- =================================================
+             RIGHT CONTENT
+        ================================================== -->
+
+        <section class="content">
+
+
+            <!-- MAP -->
+
+            <section class="map-panel">
+
+                <div class="map-header">
+
+                    <div>
+
+                        <h2>
+                            Fire Activity Map
+                        </h2>
+
+                        <p>
+                            VIIRS satellite fire detections across Kalimantan
+                        </p>
+
+                    </div>
+
+                    <div class="map-counter">
+
+                        <span>
+                            Visible Hotspots
+                        </span>
+
+                        <strong id="visible-hotspots">
+                            —
+                        </strong>
+
+                    </div>
+
+                </div>
+
+
+                <div class="map-wrapper">
+
+                    <div id="map"></div>
+
+                    <!-- MAP FILTER STATUS -->
+
+                    <div class="map-status">
+
+                        <span class="status-dot"></span>
+
+                        <span id="map-status-text">
+                            Loading satellite data...
+                        </span>
+
+                    </div>
+
+                    <!-- MAP LEGEND -->
+
+                    <div class="map-mini-legend">
+
+                        <div>
+                            <span class="mini-dot low"></span>
+                            &lt; 10 MW
+                        </div>
+
+                        <div>
+                            <span class="mini-dot medium"></span>
+                            10–50 MW
+                        </div>
+
+                        <div>
+                            <span class="mini-dot high"></span>
+                            50–100 MW
+                        </div>
+
+                        <div>
+                            <span class="mini-dot extreme"></span>
+                            &gt; 100 MW
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================================
+                 LOWER ANALYTICS
+            ================================================== -->
+
+            <section class="analytics-grid">
+
+
+                <!-- PROVINCE -->
+
+                <div class="analytics-card">
+
+                    <div class="analytics-header">
+
+                        <div>
+
+                            <h3>
+                                Province Activity
+                            </h3>
+
+                            <p>
+                                Fire events distribution
+                            </p>
+
+                        </div>
+
+                        <span class="analytics-icon">
+                            📍
+                        </span>
+
+                    </div>
+
+                    <div
+                        id="province-chart"
+                        class="ranking-list">
+
+                        <div class="loading">
+                            Loading province statistics...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- SATELLITE -->
+
+                <div class="analytics-card">
+
+                    <div class="analytics-header">
+
+                        <div>
+
+                            <h3>
+                                Satellite Coverage
+                            </h3>
+
+                            <p>
+                                Current detections
+                            </p>
+
+                        </div>
+
+                        <span class="analytics-icon">
+                            🛰
+                        </span>
+
+                    </div>
+
+                    <div
+                        id="satellite-chart"
+                        class="ranking-list">
+
+                        <div class="loading">
+                            Loading satellite statistics...
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+        </section>
+
+    </main>
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer class="footer">
+
+        <span>
+            Kalimantan FireWatch
+        </span>
+
+        <span>
+            Data: NASA FIRMS / VIIRS
+        </span>
+
+    </footer>
+
+</div>
+
+
+<!-- LIBRARIES -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+
+</html>
