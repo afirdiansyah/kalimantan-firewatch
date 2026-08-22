@@ -3,6 +3,9 @@ name: Kalimantan Firewatch Update
 on:
   workflow_dispatch:
 
+  schedule:
+    - cron: "15 * * * *"
+
 jobs:
   firewatch:
     runs-on: ubuntu-latest
