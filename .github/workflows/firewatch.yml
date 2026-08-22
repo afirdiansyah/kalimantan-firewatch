@@ -1,0 +1,35 @@
+name: Kalimantan Firewatch Update
+
+on:
+  workflow_dispatch:
+
+jobs:
+  firewatch:
+    runs-on: ubuntu-latest
+
+    env:
+      FIRMS_API_KEY: ${{ secrets.FIRMS_API_KEY }}
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run FIRMS update
+        run: |
+          python update_firewatch.py
+
+      - name: Build fire events
+        run: |
+          python build_fire_events.py
