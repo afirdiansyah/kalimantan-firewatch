@@ -117,37 +117,32 @@ function initializeMap() {
        DARK BASEMAP
     ========================================================= */
 
-    const darkTiles =
-        L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
-            {
-                attribution:
-                    "&copy; OpenStreetMap &copy; CARTO",
-                maxZoom: 18
-            }
-        );
-
+/* ========================================================
+       DARK BASEMAP (Esri Dark - karena OSM resmi tidak ada dark mode)
+    ========================================================= */
+    const darkTiles = L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+        {
+            attribution: "Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ",
+            maxZoom: 16
+        }
+    );
 
     /* ========================================================
-       LIGHT BASEMAP
+       LIGHT BASEMAP (OpenStreetMap Murni)
     ========================================================= */
-
-    const lightTiles =
-        L.tileLayer(
-            "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-            {
-                attribution:
-                    "&copy; OpenStreetMap &copy; CARTO",
-                maxZoom: 18
-            }
-        );
-
+    const lightTiles = L.tileLayer(
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution: "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+            maxZoom: 19
+        }
+    );
 
     window.darkTiles = darkTiles;
-
     window.lightTiles = lightTiles;
 
-
+    // Tampilkan Dark Mode sebagai default saat web pertama kali dibuka
     darkTiles.addTo(map);
 
 
